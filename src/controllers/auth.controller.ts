@@ -8,19 +8,19 @@ export const checkSession = async (req: express.Request, res: express.Response) 
         const sessionToken = req.cookies[SESSION_TOKEN];
         
         if (!sessionToken) {
-            return res.status(401).json({ message: 'No session token found' })
+            return res.status(401).json({ message: 'No session token found', authorized: false })
         }
 
         const result = await getUserBySessionToken(sessionToken);
 
         if (!result || result.length === 0) {
-            return res.status(401).json({ message: 'Invalid session token' });
+            return res.status(401).json({ message: 'Invalid session token', authorized: false});
         }
 
-        return res.status(200).json(result[0]);
+        return res.status(200).json({ message: 'Session token is valid', user: result[0], authorized: true});
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        res.status(500).json({ message: 'Internal Server Error', authorized: false});
     }
 }
 
@@ -86,7 +86,7 @@ export const login = async (req: express.Request, res: express.Response) => {
             expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14), // 14 days
          });
         
-        return res.status(200).json(updatedUser);
+        return res.status(200).json({ message: 'User logged in', user: updatedUser[0] });
     } catch (error) {
         console.log(error);
         res.status(500).send('Internal Server Error');    
