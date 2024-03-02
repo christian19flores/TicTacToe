@@ -25,11 +25,11 @@ export const getUserByEmail = async (email: string) => {
         .where(eq(users.email, email));
 }
 
-export const getUserBySessionToken = async (sessionToken: string) => {
-    return await db.select()
-        .from(users)
-        .where(eq(users.session_token, sessionToken));
-}
+// export const getUserBySessionToken = async (sessionToken: string) => {
+//     return await db.select()
+//         .from(users)
+//         .where(eq(users.session_token, sessionToken));
+// }
 
 export const createUser = async (newUser: NewUser) => {
     return await db.insert(users)

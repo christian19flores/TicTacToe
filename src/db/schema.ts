@@ -7,8 +7,8 @@ export const users = pgTable('users', {
     username: text('username').notNull(),
     email: text('email').notNull(),
     password: text('password').notNull(),
-    salt: text('salt'),
-    session_token: text('session_token'),
+    // salt: text('salt'),
+    // session_token: text('session_token'),
 
     wins: integer('wins').notNull().default(0),
     losses: integer('losses').notNull().default(0),
