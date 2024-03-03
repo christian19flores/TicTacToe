@@ -3,13 +3,15 @@ import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET; // Ensure this is set in your environment
 
+
+
 export const isAuthenticated = (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction
 ) => {
     try {
-        const authHeader = req.headers.authorization;
+        const authHeader = req.headers.authorization as string;
 
         if (!authHeader) {
             return res.status(401).send('Unauthorized: No token provided');
@@ -20,13 +22,15 @@ export const isAuthenticated = (
         if (!token) {
             return res.status(401).send('Unauthorized: No token provided');
         }
-
-        jwt.verify(token, JWT_SECRET, (err, user) => {
+        
+        jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
             if (err) {
                 return res.status(403).send('Unauthorized: Invalid token');
             }
 
-            // req.user = user; // Assuming the JWT contains the user information you want to attach to the request
+            // @ts-ignore
+            req.user = user;
+            
             next();
         });
     } catch (error) {
@@ -34,34 +38,3 @@ export const isAuthenticated = (
         res.status(500).send('Internal Server Error');
     }
 };
-
-// import express from 'express';
-// import { getUserBySessionToken } from '../models/user.model';
-// import { SESSION_TOKEN } from '../utils/constants';
-
-// export const isAuthenticated = async (
-//     req: express.Request,
-//     res: express.Response,
-//     next: express.NextFunction
-// ) => {
-//     try {
-//         const sessionToken = req.cookies[SESSION_TOKEN];
-        
-//         if (!sessionToken) {
-//             return res.status(401).send('Unauthorized');
-//         }
-
-//         const result = await getUserBySessionToken(sessionToken);
-
-//         if (!result || result.length === 0) {
-//             return res.status(401).send('Unauthorized');
-//         }
-
-//         // req.user = result[0];
-
-//         next();
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).send('Internal Server Error');
-//     }
-// }

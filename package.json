@@ -1,8 +1,10 @@
 {
   "scripts": {
     "start": "nodemon",
+    "drop": "drizzle-kit drop",
     "migrate": "ts-node ./src/db/migrate.ts",
-    "generate": "drizzle-kit generate:pg"
+    "generate": "drizzle-kit generate:pg",
+    "studio": "drizzle-kit studio"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

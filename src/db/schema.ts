@@ -7,8 +7,6 @@ export const users = pgTable('users', {
     username: text('username').notNull(),
     email: text('email').notNull(),
     password: text('password').notNull(),
-    // salt: text('salt'),
-    // session_token: text('session_token'),
 
     wins: integer('wins').notNull().default(0),
     losses: integer('losses').notNull().default(0),
@@ -21,6 +19,8 @@ export type NewUser = InferInsertModel<typeof users>;
 // schema for storing tic-tac-toe game state
 export const games = pgTable('games', {
     id: serial('id').primaryKey(),
+
+    game_id: text('game_id').notNull().unique(),
     /**
      *  [
      *      {"move": 1, "position": 5, "player": "X"},
@@ -32,8 +32,8 @@ export const games = pgTable('games', {
     winner: text('winner'),
     // participants relationships
     
-    player_x: text('player_x'),
-    player_o: text('player_o'),
+    player_x: text('player_x').references(() => users.id).notNull(),
+    player_o: text('player_o').references(() => users.id).notNull(),
     created_at: timestamp('created_at').notNull(),
     updated_at: timestamp('updated_at').notNull(),
 })

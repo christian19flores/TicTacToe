@@ -16,23 +16,35 @@ export default function MainContainer({ children }: MainContainerProps) {
 
     useEffect(() => {
         // check if the user has session
-        let checkSession = async () => {
-            let response = await fetch('http://localhost:3000/api/v1/auth/check-session');
+        let refresh = async () => {
+            if (!localStorage.getItem('wf-ttt')) {
+                return;
+            }
+
+            let response = await fetch('http://localhost:3000/api/v1/auth/refresh-user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('wf-ttt')}`
+                },
+            });
+            
             let data = await response.json();
-            console.log(data);
-            if (data.status === 200) {
-                console.log('User is logged in');
+            if (response.status === 200 && data.user) {
                 dispatch({
                     type: 'SET_USER',
                     payload: {
                         username: data.user.username,
                         email: data.user.email,
+                        wins: data.user.wins,
+                        losses: data.user.losses,
+                        draws: data.user.draws,
                     }
                 });
             }
         }
 
-        checkSession();
+        refresh();
     }, []);
 
     return (

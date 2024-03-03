@@ -14,7 +14,8 @@ export const register = async (req: express.Request, res: express.Response) => {
         }
 
         const existingUser = await getUserByEmail(email);
-        if (existingUser) {
+        console.log(existingUser)
+        if (!existingUser || existingUser.length > 0) {
             return res.status(400).send('Email already exists');
         }
 
@@ -46,9 +47,60 @@ export const login = async (req: express.Request, res: express.Response) => {
             return res.status(401).send('Invalid email or password');
         }
 
-        const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '14d' });
+        const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '14d' });
 
-        res.status(200).json({ message: 'User logged in', token });
+        res.status(200).json({ 
+            message: 'User logged in',
+            token,
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                wins: user.wins,
+                losses: user.losses,
+                draws: user.draws
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+}
+
+export const refreshUser = async (req: express.Request, res: express.Response) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1]; // Assuming the token is sent in the Authorization header
+        if (!token) {
+            return res.status(401).send('Unauthorized: No token provided');
+        }
+
+        jwt.verify(token, JWT_SECRET, async (err, decoded) => {
+            if (err) {
+                return res.status(403).send('Unauthorized: Invalid token');
+            }
+
+            console.log(decoded)
+            // @ts-ignore
+            let result = await getUserByEmail(decoded.email);
+
+            if (!result) {
+                return res.status(401).send('Unauthorized: User not found');
+            }
+
+            let user = result[0];
+
+            res.status(200).json({ 
+                message: 'User is logged in',
+                user: {
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    wins: user.wins,
+                    losses: user.losses,
+                    draws: user.draws
+                }
+            });
+        });
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');

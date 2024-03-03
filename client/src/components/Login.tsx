@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import UserContext from "../contexts/UserContext";
 
 interface LoginProps {
@@ -8,6 +8,7 @@ interface LoginProps {
 
 export default function Login({ }: LoginProps) {
     const context = useContext(UserContext);
+    let navigate = useNavigate();
 
     if (!context) throw new Error('useUser must be used within a UserProvider');
 
@@ -31,9 +32,9 @@ export default function Login({ }: LoginProps) {
 
         let data = await resp.json();
 
-        console.log(resp);
         if (resp.status !== 200) {
             console.log(data);
+            // handle error
             return;
         }
 
@@ -41,18 +42,18 @@ export default function Login({ }: LoginProps) {
             type: 'SET_USER',
             payload: {
                 username: data.user.username,
-                email: data.user.email
+                email: data.user.email,
+                wins: data.user.wins,
+                losses: data.user.losses,
+                draws: data.user.draws,
             }
         })
 
-        console.log(data);
-        console.log('User logged in');
-    }
+        localStorage.setItem('wf-ttt', data.token);
 
-    useEffect(() => {
-        console.log('Email changed');
-        console.log(state.email);
-    }, [state.email]);
+        // Redirect to leaderboard
+        navigate('/leaderboard');
+    }
 
     return (
         <>

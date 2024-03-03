@@ -1,3 +1,5 @@
+import withAuth from "../hoc/withAuth";
+
 interface LeaderboardProps {
 
 }
@@ -8,7 +10,7 @@ const people = [
     { name: 'Lindsay Walton', title: 'Front-end Developer', email: 'kvkvenskevs@arst.com', role: 'Member' },
 ]
 
-export default function Leaderboard({ }: LeaderboardProps) {
+function Leaderboard({ }: LeaderboardProps) {
     return (
         <div className="px-4 sm:px-6 lg:px-8">
             <div className="sm:flex sm:items-center">
@@ -74,3 +76,5 @@ export default function Leaderboard({ }: LeaderboardProps) {
         </div>
     );
 };
+
+export default withAuth(Leaderboard);
