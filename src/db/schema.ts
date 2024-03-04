@@ -1,9 +1,8 @@
 import { InferInsertModel, InferSelectModel } from "drizzle-orm";
-import { jsonb } from "drizzle-orm/pg-core";
-import { serial, text, timestamp, integer, pgTable } from "drizzle-orm/pg-core";
+import { serial, text, timestamp, integer, pgTable, pgEnum, jsonb } from "drizzle-orm/pg-core";
 
 export const users = pgTable('users', {
-    id: serial('id').primaryKey(),
+    id: text('id').primaryKey(),
     username: text('username').notNull(),
     email: text('email').notNull(),
     password: text('password').notNull(),
@@ -21,6 +20,7 @@ export const games = pgTable('games', {
     id: serial('id').primaryKey(),
 
     game_id: text('game_id').notNull().unique(),
+    status: text('status').notNull().default('pending'),
     /**
      *  [
      *      {"move": 1, "position": 5, "player": "X"},

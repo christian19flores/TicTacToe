@@ -10,7 +10,7 @@ function withAuth<T extends Props>(WrappedComponent: ComponentType<T>) {
     const WithAuthComponent = (props: Omit<T, keyof Props>) => {
         const { state } = useContext(UserContext);
 
-        if (!state.isAuthenticated  && !localStorage.getItem('wf-ttt')) {
+        if (!state.isAuthenticated  && !localStorage.getItem('wr-ttt')) {
             // Redirect to the login page if not authenticated
             // Using Navigate component from React Router v6 for redirection
             return <Navigate to="/login" replace />;

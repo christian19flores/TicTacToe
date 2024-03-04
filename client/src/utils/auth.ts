@@ -1,5 +1,5 @@
 export const isAuthenticated = async () => {
-    const token = localStorage.getItem('wf-ttt');
+    const token = localStorage.getItem('wr-ttt');
     if (!token) {
         return false;
     }

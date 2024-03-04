@@ -41,6 +41,7 @@ export default function Login({ }: LoginProps) {
         dispatch({
             type: 'SET_USER',
             payload: {
+                id: data.user.id,
                 username: data.user.username,
                 email: data.user.email,
                 wins: data.user.wins,
@@ -49,7 +50,7 @@ export default function Login({ }: LoginProps) {
             }
         })
 
-        localStorage.setItem('wf-ttt', data.token);
+        localStorage.setItem('wr-ttt', data.token);
 
         // Redirect to leaderboard
         navigate('/leaderboard');

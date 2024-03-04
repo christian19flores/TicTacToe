@@ -40,7 +40,7 @@ export default function Navbar({ }: NavbarProps) {
     let handleLogout = () => {
         console.log('Logging out');
         // clear the token
-        localStorage.removeItem('wf-ttt');
+        localStorage.removeItem('wr-ttt');
         // clear the user context
         context.dispatch({
             type: 'LOGOUT',
@@ -53,7 +53,7 @@ export default function Navbar({ }: NavbarProps) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'authorization': `Bearer ${localStorage.getItem('wf-ttt')}`
+                'authorization': `Bearer ${localStorage.getItem('wr-ttt')}`
             },
         });
         if (response.status !== 201) {

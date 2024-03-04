@@ -17,7 +17,7 @@ export default function Logout({}: LogoutProps) {
     const { dispatch } = context;
     
     useEffect(() => {
-        localStorage.removeItem('wf-ttt');
+        localStorage.removeItem('wr-ttt');
 
         // clear the user context
         dispatch({

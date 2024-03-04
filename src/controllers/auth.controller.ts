@@ -2,6 +2,7 @@ import express from 'express';
 import { createUser, getUserByEmail } from '../models/user.model';
 import jwt from 'jsonwebtoken';
 import { comparePassword, hashPassword } from '../utils/crypto';
+import { v4 as uuidv4 } from 'uuid';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -20,7 +21,7 @@ export const register = async (req: express.Request, res: express.Response) => {
         }
 
         const hashedPassword = await hashPassword(password);
-        const user = await createUser({ username, email, password: hashedPassword });
+        const user = await createUser({id: uuidv4(), username, email, password: hashedPassword });
 
         res.status(201).json({ message: 'User created', user });
     } catch (error) {
@@ -43,7 +44,7 @@ export const login = async (req: express.Request, res: express.Response) => {
 
         const user = result[0];
 
-        if (!comparePassword(password, user.password)) {
+        if (!await comparePassword(password, user.password)) {
             return res.status(401).send('Invalid email or password');
         }
 

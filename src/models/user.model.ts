@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm';
 import db from '../db/db';
 import { users, type User, type NewUser } from '../db/schema';
+import { v4 as uuidv4 } from 'uuid';
 
 export const getUsers = async () => {
     return await db.select({ id: users.id, username: users.username, email: users.email })
@@ -19,7 +20,7 @@ export const createUser = async (newUser: NewUser) => {
         .returning({ id: users.id, username: users.username, email: users.email });
 }
 
-export const updateUserById = async (id: number, updatedUser: User) => {
+export const updateUserById = async (id: string, updatedUser: User) => {
     return await db.update(users)
         .set(updatedUser)
         .where(eq(users.id, id))

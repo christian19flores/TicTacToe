@@ -3,6 +3,7 @@ import { UserState, UserAction } from '../types';
 import UserContext from '../contexts/UserContext';
 
 const initialState: UserState = {
+    id: '',
     username: '',
     email: '',
     wins: 0,
@@ -15,6 +16,7 @@ function reducer(state: UserState, action: UserAction): UserState {
         case 'SET_USER':
             return {
                 ...state,
+                id: action.payload.id,
                 username: action.payload.username,
                 email: action.payload.email,
                 wins: action.payload.wins,
@@ -25,6 +27,7 @@ function reducer(state: UserState, action: UserAction): UserState {
         case 'LOGOUT':
             return {
                 ...state,
+                id: '',
                 username: '',
                 email: '',
                 wins: 0,

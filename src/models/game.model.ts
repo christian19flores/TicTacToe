@@ -44,3 +44,19 @@ export const updateGameById = async (id: number, updatedGame: Game) => {
             updated_at: games.updated_at
         });
 }
+
+export const findGameById = async (gameId: string) => {
+    return await db.select({
+        id: games.id,
+        game_id: games.game_id,
+        status: games.status,
+        moves: games.moves,
+        winner: games.winner,
+        player_x: games.player_x,
+        player_o: games.player_o,
+        created_at: games.created_at,
+        updated_at: games.updated_at
+    })
+        .from(games)
+        .where(eq(games.game_id, gameId));
+}

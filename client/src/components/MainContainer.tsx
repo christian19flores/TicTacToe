@@ -17,7 +17,7 @@ export default function MainContainer({ children }: MainContainerProps) {
     useEffect(() => {
         // check if the user has session
         let refresh = async () => {
-            if (!localStorage.getItem('wf-ttt')) {
+            if (!localStorage.getItem('wr-ttt')) {
                 return;
             }
 
@@ -25,7 +25,7 @@ export default function MainContainer({ children }: MainContainerProps) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('wf-ttt')}`
+                    'Authorization': `Bearer ${localStorage.getItem('wr-ttt')}`
                 },
             });
             
