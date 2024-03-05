@@ -26,3 +26,28 @@ export const updateUserById = async (id: string, updatedUser: User) => {
         .where(eq(users.id, id))
         .returning({ id: users.id, username: users.username, email: users.email });
 }
+
+export const iterateUserPerformance = async (id: string, result: string) => {
+    const user = await db.select({ id: users.id, wins: users.wins, losses: users.losses, draws: users.draws })
+        .from(users)
+        .where(eq(users.id, id));
+
+    const updatedUser = {
+        wins: user[0].wins,
+        losses: user[0].losses,
+        draws: user[0].draws
+    };
+
+    if (result === 'win') {
+        updatedUser.wins += 1;
+    } else if (result === 'loss') {
+        updatedUser.losses += 1;
+    } else {
+        updatedUser.draws += 1;
+    }
+
+    return await db.update(users)
+        .set(updatedUser)
+        .where(eq(users.id, id))
+        .returning({ id: users.id, wins: users.wins, losses: users.losses, draws: users.draws });
+}

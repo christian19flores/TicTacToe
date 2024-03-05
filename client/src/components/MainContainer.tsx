@@ -34,6 +34,7 @@ export default function MainContainer({ children }: MainContainerProps) {
                 dispatch({
                     type: 'SET_USER',
                     payload: {
+                        id: data.user.id,
                         username: data.user.username,
                         email: data.user.email,
                         wins: data.user.wins,

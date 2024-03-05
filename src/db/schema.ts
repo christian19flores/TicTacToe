@@ -30,7 +30,6 @@ export const games = pgTable('games', {
      */
     moves: jsonb('moves').notNull(),
     winner: text('winner'),
-    // participants relationships
     
     player_x: text('player_x').references(() => users.id).notNull(),
     player_o: text('player_o').references(() => users.id).notNull(),
@@ -40,3 +39,9 @@ export const games = pgTable('games', {
 
 export type Game = InferSelectModel<typeof games>;
 export type NewGame = InferInsertModel<typeof games>;
+
+export type GameMove = {
+    move: number,
+    position: number,
+    player: string
+}

@@ -60,3 +60,21 @@ export const findGameById = async (gameId: string) => {
         .from(games)
         .where(eq(games.game_id, gameId));
 }
+
+export const makeMove = async (game: any) => {
+    // should be similar to updateGameById
+    // but should only add a move to the moves array
+
+    return await db.update(games)
+        .set(game)
+        .where(eq(games.id, game.id))
+        .returning({
+            id: games.id,
+            moves: games.moves,
+            winner: games.winner,
+            player_x: games.player_x,
+            player_o: games.player_o,
+            created_at: games.created_at,
+            updated_at: games.updated_at
+        });
+}

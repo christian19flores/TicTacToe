@@ -28,3 +28,16 @@ export interface GameMove {
     position: number;
     player: string;
 }
+
+export interface PlayerState {
+    player_char: string;
+    isTurn: boolean;
+}
+
+export interface GameState {
+    moves: GameMove[];
+    player_x: string;
+    player_o: string;
+    winner: string;
+    status: string;
+}
