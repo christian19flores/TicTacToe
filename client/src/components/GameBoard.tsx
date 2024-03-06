@@ -44,6 +44,22 @@ function GameBoard({ }: GameBoardProps) {
     });
 
     useEffect(() => {
+        // reset game state
+        setGameState({
+            moves: [],
+            player_x: '',
+            player_o: '',
+            winner: '',
+            status: ''
+        });
+        setPlayerState({
+            player_char: '',
+            isTurn: false
+        });
+        
+    }, [gameId]);
+
+    useEffect(() => {
         socket = io('http://localhost:3000', {
             auth: {
                 token: localStorage.getItem('wr-ttt'), // Assuming this is your auth token
@@ -78,14 +94,15 @@ function GameBoard({ }: GameBoardProps) {
         });
 
         socket.on('gameUpdate', (game: any) => {
+            
             console.log('Game updated:', game);
             setGameState({
-                    moves: game.moves,
-                    player_x: game.player_x,
-                    player_o: game.player_o,
-                    winner: game.winner,
-                    status: game.status
-                });
+                moves: game.moves,
+                player_x: game.player_x,
+                player_o: game.player_o,
+                winner: game.winner,
+                status: game.status
+            });
 
             setPlayerState({
                 player_char: game.player_x === state?.id ? 'X' : 'O',
@@ -102,20 +119,29 @@ function GameBoard({ }: GameBoardProps) {
         return () => {
             socket.disconnect();
         };
-    }, []);
+    }, [state.id, gameId]);
+
+    useEffect(() => {
+        // find player data
+        if (!state) return;
+        if (!gameState.player_x || !gameState.player_o) return;
+
+        
+
+    }, [gameState])
 
     let determineIsTurn = (game: any) => {
+        if (game.status === 'completed') return false;
+
         if (game.moves.length === 0) {
             return game.player_x === state?.id;
+        } else {
+            let lastMove = game.moves[game.moves.length - 1];
+            return lastMove.player !== state?.id;
         }
-
-        let lastMove = game.moves[game.moves.length - 1];
-        return lastMove.player !== state?.id;
     }
 
     let handleMakeMove = (index: number) => {
-        console.log('user:', state);
-        console.log('Making move:', index);
         socket.emit('makeAMove', { gameId: gameId, move: index });
     }
 

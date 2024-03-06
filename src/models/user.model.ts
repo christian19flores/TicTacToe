@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import db from '../db/db';
 import { users, type User, type NewUser } from '../db/schema';
 import { v4 as uuidv4 } from 'uuid';
@@ -50,4 +50,29 @@ export const iterateUserPerformance = async (id: string, result: string) => {
         .set(updatedUser)
         .where(eq(users.id, id))
         .returning({ id: users.id, wins: users.wins, losses: users.losses, draws: users.draws });
+}
+
+export const getTopPerformers = async (type: string, limit: number) => {
+    switch (type) {
+        case 'wins':
+            return await db.select({ id: users.id, username: users.username, wins: users.wins, losses: users.losses, draws: users.draws })
+                .from(users)
+                .orderBy(desc(users.wins))
+                .limit(limit);
+        case 'losses':
+            return await db.select({ id: users.id, username: users.username, wins: users.wins, losses: users.losses, draws: users.draws })
+                .from(users)
+                .orderBy(desc(users.losses))
+                .limit(limit);
+        case 'draws':
+            return await db.select({ id: users.id, username: users.username, wins: users.wins, losses: users.losses, draws: users.draws })
+                .from(users)
+                .orderBy(desc(users.draws))
+                .limit(limit);
+        default:
+            return await db.select({ id: users.id, username: users.username, wins: users.wins, losses: users.losses, draws: users.draws })
+                .from(users)
+                .orderBy(desc(users.wins))
+                .limit(limit);
+    }
 }

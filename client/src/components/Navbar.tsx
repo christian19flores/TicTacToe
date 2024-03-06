@@ -74,7 +74,8 @@ export default function Navbar({ }: NavbarProps) {
 
         let gameId = data.game.game_id;
         // redirect to the game page
-        navigate(`/game/${gameId}`);
+        // navigate(`/game/${gameId}`);
+        window.location.href = `/game/${gameId}`;
     }
 
     return (
@@ -213,14 +214,6 @@ export default function Navbar({ }: NavbarProps) {
                                     <div className="text-base font-medium text-white">{user.name}</div>
                                     <div className="text-sm font-medium text-gray-400">{user.email}</div>
                                 </div>
-                                {/* <button
-                                    type="button"
-                                    className="relative ml-auto flex-shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                                >
-                                    <span className="absolute -inset-1.5" />
-                                    <span className="sr-only">View notifications</span>
-                                    <Bell className="h-6 w-6" aria-hidden="true" />
-                                </button> */}
                             </div>
                             <div className="mt-3 space-y-1 px-2 sm:px-3">
                                 {userNavigation.map((item) => (
