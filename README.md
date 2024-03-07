@@ -41,8 +41,8 @@ SECRET_KEY=''
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/yourusername/tic-tac-toe-websockets.git
-cd tic-tac-toe-websockets
+git clone https://github.com/christian19flores/TicTacToe.git
+cd TicTacToe
 ```
 
 1. **Install backend**
