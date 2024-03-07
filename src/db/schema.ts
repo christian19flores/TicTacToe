@@ -1,4 +1,4 @@
-import { InferInsertModel, InferSelectModel } from "drizzle-orm";
+import { InferInsertModel, InferSelectModel, relations } from "drizzle-orm";
 import { serial, text, timestamp, integer, pgTable, pgEnum, jsonb } from "drizzle-orm/pg-core";
 
 export const users = pgTable('users', {
@@ -30,12 +30,17 @@ export const games = pgTable('games', {
      */
     moves: jsonb('moves').notNull(),
     winner: text('winner'),
-    
-    player_x: text('player_x').references(() => users.id).notNull(),
-    player_o: text('player_o').references(() => users.id).notNull(),
+
+    playerX: text('player_x'),
+    playerO: text('player_o'),
     created_at: timestamp('created_at').notNull(),
     updated_at: timestamp('updated_at').notNull(),
 })
+
+export const gameRelations = relations(games, ({ one }) => ({
+    playerX: one(users, { fields: [games.playerX], references: [users.id] }),
+    playerO: one(users, { fields: [games.playerO], references: [users.id] }),
+}));
 
 export type Game = InferSelectModel<typeof games>;
 export type NewGame = InferInsertModel<typeof games>;

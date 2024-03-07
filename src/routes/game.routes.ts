@@ -4,7 +4,7 @@ import { isAuthenticated } from '../middleware/auth.middleware';
 
 const routes = express.Router();
 
-routes.route('/start').post(isAuthenticated, GameController.startGame);
+routes.route('/create').post(isAuthenticated, GameController.createGame);
 routes.route('/join/:gameId').get(isAuthenticated, GameController.joinGame);
 
 export default routes;

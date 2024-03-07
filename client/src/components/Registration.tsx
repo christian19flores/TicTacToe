@@ -1,17 +1,50 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-interface RegisterProps {
+export default function Register() {
+    let navigate = useNavigate();
 
-}
-
-export default function Register({ }: RegisterProps) {
     let [email, setEmail] = useState('');
     let [username, setUsername] = useState('');
     let [password, setPassword] = useState('');
 
+    let [errors, setErrors] = useState({
+        email: '',
+        username: '',
+        password: '',
+    });
+
     let handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        // Perform form validation
+        let validationErrors = {
+            email: '',
+            username: '',
+            password: '',
+        };
+
+        if (!email) {
+            validationErrors.email = 'Email is required';
+        } else if (!/\S+@\S+\.\S+/.test(email)) {
+            validationErrors.email = 'Invalid email format';
+        }
+
+        if (!username) {
+            validationErrors.username = 'Username is required';
+        }
+
+        if (!password) {
+            validationErrors.password = 'Password is required';
+        } else if (password.length < 6) {
+            validationErrors.password = 'Password must be at least 6 characters long';
+        }
+
+        if (validationErrors.email || validationErrors.username || validationErrors.password) {
+            setErrors(validationErrors);
+            return;
+        }
 
         fetch('http://localhost:3000/api/v1/auth/register', {
             method: 'POST',
@@ -33,7 +66,7 @@ export default function Register({ }: RegisterProps) {
                 return resp.json();
             })
             .then((data) => {
-                console.log(data);
+                navigate('/login');
             });
     }
 
@@ -52,65 +85,65 @@ export default function Register({ }: RegisterProps) {
                 </div>
 
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                    <form className="space-y-2" action="#" method="POST">
+                    <form className="space-y-2" onSubmit={handleFormSubmit}>
                         <label className="form-control w-full">
                             <div className="label">
                                 <span className="label-text">Username</span>
-                                {/* <span className="label-text-alt">Top Right label</span> */}
                             </div>
                             <input
                                 id="username"
                                 name="username"
-                                type="username"
+                                type="text"
                                 autoComplete="username"
-                                required
-                                className="input input-bordered w-full"
+                                className={`input input-bordered w-full ${errors.username ? 'input-error' : ''}`}
                                 onChange={(e) => setUsername(e.target.value)}
                                 value={username}
                             />
-                            {/* <div className="label">
-                                <span className="label-text-alt">Bottom Left label</span>
-                            </div> */}
+                            {errors.username && (
+                                <div className="label">
+                                    <span className="label-text-alt text-error">{errors.username}</span>
+                                </div>
+                            )}
                         </label>
 
                         <label className="form-control w-full">
                             <div className="label">
                                 <span className="label-text">Email</span>
-                                {/* <span className="label-text-alt">Top Right label</span> */}
                             </div>
                             <input
                                 id="email"
                                 name="email"
                                 type="email"
                                 autoComplete="email"
-                                required
-                                className="input input-bordered w-full"
+                                className={`input input-bordered w-full ${errors.email ? 'input-error' : ''}`}
                                 onChange={(e) => setEmail(e.target.value)}
                                 value={email}
                             />
-                            {/* <div className="label">
-                                <span className="label-text-alt">Bottom Left label</span>
-                            </div> */}
+                            {errors.email && (
+                                <div className="label">
+                                    <span className="label-text-alt text-error">{errors.email}</span>
+                                </div>
+                            )}
                         </label>
 
                         <label className="form-control w-full">
                             <div className="label">
                                 <span className="label-text">Password</span>
-                                {/* <span className="label-text-alt">Top Right label</span> */}
                             </div>
                             <input
                                 id="password"
                                 name="password"
                                 type="password"
-                                autoComplete="current-password"
-                                required
-                                className="input input-bordered w-full"
+                                autoComplete="new-password"
+                                className={`input input-bordered w-full ${errors.password ? 'input-error' : ''}`}
                                 onChange={(e) => setPassword(e.target.value)}
                                 value={password}
                             />
-                            {/* <div className="label">
-                                <span className="label-text-alt">Bottom Left label</span>
-                            </div> */}
+                            {errors.password && (
+                                <div className="label">
+                                    <span className="label-text-alt text-error">{errors.password}</span>
+                                </div>
+                            )}
                         </label>
 
                         <div className="pt-4">
@@ -133,4 +166,4 @@ export default function Register({ }: RegisterProps) {
             </div>
         </>
     );
-};
+}

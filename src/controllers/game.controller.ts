@@ -8,7 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 class GameController {
     /**
      * Needs to create a new game with player_1 populated and a unique game_id that is used to join the game by url
-     * /game/start
+     * /game/create
      * 
      *   POST:
      *        - create a new game with player_1 populated
@@ -28,7 +28,7 @@ class GameController {
      *          - Internal Server Error
      * 
      */
-    public async startGame(req: express.Request, res: express.Response) {
+    public async createGame(req: express.Request, res: express.Response) {
         try {
             // @ts-ignore
             const result = await getUserByEmail(req.user.email);
@@ -44,8 +44,8 @@ class GameController {
                 game_id: gameId,
                 moves: [],
                 status: 'waiting',
-                player_x: playerOne.id.toString(),
-                player_o: '',
+                playerX: playerOne.id.toString(),
+                playerO: '',
                 created_at: new Date(),
                 updated_at: new Date()
             });

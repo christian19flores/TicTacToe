@@ -29,25 +29,6 @@ const io = new SocketIOServer(server, {
   }
 });
 
-io.use((socket, next) => {
-  const token = socket.handshake.auth.token;  
-  if (!token) {
-      console.log('No token found')
-      return next(new Error('Authentication error'));
-  }
-
-  console.log('Socket JWT:', token);
-  verifyToken(token)
-      .then((user) => {
-          // @ts-ignore
-          socket.user = user;
-          next();
-      })
-      .catch((error) => {
-          next(new Error('Authentication error'));
-      });
-});
-
 const socketManager = new SocketManager(io);
 socketManager.init();
 

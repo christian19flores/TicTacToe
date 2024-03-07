@@ -1,5 +1,5 @@
 import withAuth from "../hoc/withAuth";
-import { Clipboard } from "lucide-react";
+import { Circle, Clipboard, X } from "lucide-react";
 import TicTacToe from "./TicTacToe";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -32,32 +32,31 @@ function GameBoard({ }: GameBoardProps) {
 
     let [gameState, setGameState] = useState<GameState>({
         moves: [],
-        player_x: '',
-        player_o: '',
+        playerX: {
+            id: '',
+            username: '',
+            email: '',
+            wins: 0,
+            losses: 0,
+            draws: 0
+
+        },
+        playerO: {
+            id: '',
+            username: '',
+            email: '',
+            wins: 0,
+            losses: 0,
+            draws: 0
+        },
         winner: '',
-        status: ''
+        status: '',
     });
 
     let [playerState, setPlayerState] = useState<PlayerState>({
         player_char: '',
         isTurn: false
     });
-
-    useEffect(() => {
-        // reset game state
-        setGameState({
-            moves: [],
-            player_x: '',
-            player_o: '',
-            winner: '',
-            status: ''
-        });
-        setPlayerState({
-            player_char: '',
-            isTurn: false
-        });
-        
-    }, [gameId]);
 
     useEffect(() => {
         socket = io('http://localhost:3000', {
@@ -68,16 +67,9 @@ function GameBoard({ }: GameBoardProps) {
             transports: ["websocket", "polling"],
         });
         socket.on('connect', () => {
-            console.log(state)
-            console.log('gameId:', gameId)
-            console.log('Successfully connected to the server');
+            console.log('Successfully connected to game: ', gameId);
             // Emit the startGame event right after connecting
             socket.emit('joinGame', { gameId: gameId }); // Adjust with actual user data
-        });
-
-        socket.on('gameStarted', ({ gameId, game }) => {
-            console.log('Game started:', game);
-            console.log('Game started with ID:', gameId);
         });
 
         socket.on('error', (error) => {
@@ -93,25 +85,58 @@ function GameBoard({ }: GameBoardProps) {
             }
         });
 
-        socket.on('gameUpdate', (game: any) => {
-            
-            console.log('Game updated:', game);
+        socket.on('joinedGame', (game: any) => {
+            console.log('Game joined:', game);
             setGameState({
                 moves: game.moves,
-                player_x: game.player_x,
-                player_o: game.player_o,
+                playerX: game.playerX,
+                playerO: game.playerO ? game.playerO : {
+                    id: '',
+                    username: '',
+                    email: '',
+                    wins: 0,
+                    losses: 0,
+                    draws: 0
+                },
                 winner: game.winner,
                 status: game.status
             });
 
             setPlayerState({
-                player_char: game.player_x === state?.id ? 'X' : 'O',
+                player_char: game.playerX.id === state?.id ? 'X' : 'O',
                 isTurn: determineIsTurn(game)
             });
+        });
 
-            console.log('Player state:', {
-                player_char: game.player_x === state?.id ? 'X' : 'O',
+        socket.on('gameUpdate', (game: any) => {
+            console.log('Game updated:', game);
+            setGameState((prevGameState) => ({
+                ...prevGameState,
+                moves: game.moves,
+                winner: game.winner,
+                status: game.status
+            }));
+
+            setPlayerState({
+                player_char: game.playerX === state?.id ? 'X' : 'O',
                 isTurn: determineIsTurn(game)
+            });
+        });
+
+        socket.on('gameCompleted', (game: any) => {
+            setGameState({
+                moves: game.moves,
+                playerX: game.playerX,
+                playerO: game.playerO ? game.playerO : {
+                    id: '',
+                    username: '',
+                    email: '',
+                    wins: 0,
+                    losses: 0,
+                    draws: 0
+                },
+                winner: game.winner,
+                status: game.status
             });
         });
 
@@ -119,25 +144,27 @@ function GameBoard({ }: GameBoardProps) {
         return () => {
             socket.disconnect();
         };
-    }, [state.id, gameId]);
-
-    useEffect(() => {
-        // find player data
-        if (!state) return;
-        if (!gameState.player_x || !gameState.player_o) return;
-
-        
-
-    }, [gameState])
+    }, [state.id]);
 
     let determineIsTurn = (game: any) => {
         if (game.status === 'completed') return false;
 
         if (game.moves.length === 0) {
-            return game.player_x === state?.id;
+            return game.playerX === state?.id || game.playerX.id === state?.id;
         } else {
             let lastMove = game.moves[game.moves.length - 1];
             return lastMove.player !== state?.id;
+        }
+    }
+
+    let isPlayerTurn = (playerId: string) => {
+        // use game state to determine if it's the player's turn
+        if (gameState.status === 'completed') return false;
+        if (gameState.moves.length === 0) {
+            return playerId === gameState.playerX.id ;
+        } else {
+            let lastMove = gameState.moves[gameState.moves.length - 1];
+            return lastMove.player !== playerId;
         }
     }
 
@@ -152,8 +179,8 @@ function GameBoard({ }: GameBoardProps) {
     }
 
     return (
-        <div className="container mx-auto flex flex-col items-center justify-center">
-            <div className="mt-5 max-w-sm flex items-stretch">
+        <div className="container max-w-3xl mx-auto flex flex-col items-center justify-center space-y-10">
+            <div className="mt-5 flex items-stretch">
                 <span className="bg-neutral -mr-2 z-10 flex items-center p-3 rounded-l-lg">
                     Room Link
                 </span>
@@ -166,6 +193,35 @@ function GameBoard({ }: GameBoardProps) {
                 >
                     <Clipboard size={24} />
                 </button>
+            </div>
+
+            <div className="flex flex-row justify-between w-full max-w-xl">
+
+                <div className="indicator basis-2/5">
+                    <span className="indicator-item badge badge-info">{gameState.playerX.wins}-{gameState.playerX.losses}-{gameState.playerX.draws}</span>
+                    <span className="indicator-item indicator-start badge badge-neutral">
+                        <X size={32} className="py-1" />
+                    </span>
+                    <div className={`${ gameState.winner !== '' &&  gameState.winner === gameState.playerX.id ? 'border border-success' : ''} ${isPlayerTurn(gameState.playerX.id) ? 'border border-base-content' : ''} flex justify-center leading-tight items-center text-base-content rounded-xl text-4xl w-full bg-base-300 place-items-center capitalize`}>
+                        {gameState.playerX.username}
+                    </div>
+                </div>
+                <span className="p-3 text-4xl leading-tight basis-1/5 text-center">
+                    VS
+                </span>
+                <div className="indicator basis-2/5">
+                    <span className="indicator-item badge badge-info">{gameState.playerO.wins}-{gameState.playerO.losses}-{gameState.playerO.draws}</span>
+                    <span className="indicator-item indicator-start badge badge-neutral">
+                        <Circle size={25} className="py-1" />
+                    </span>
+                    <div className={`${ gameState.winner !== '' && gameState.winner === gameState.playerO.id ? 'border border-success' : ''} ${isPlayerTurn(gameState.playerO.id) ? 'border border-base-content' : ''} flex justify-center leading-tight items-center text-base-content rounded-xl text-4xl w-full bg-base-300 place-items-center capitalize`}>
+                        {gameState.playerO.username ? (
+                            gameState.playerO.username
+                        ) : (
+                            <span className="loading loading-dots loading-lg"></span>
+                        )}
+                    </div>
+                </div>
             </div>
 
             <div className="mt-5">

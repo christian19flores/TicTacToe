@@ -1,4 +1,4 @@
-import { eq, or, sql } from 'drizzle-orm';
+import { eq, or, sql, aliasedRelation } from 'drizzle-orm';
 import db from '../db/db';
 import { games, type Game, type NewGame, users } from '../db/schema';
 
@@ -10,8 +10,8 @@ export const createGame = async (newGame: NewGame) => {
             game_id: games.game_id,
             moves: games.moves,
             status: games.status,
-            player_x: games.player_x,
-            player_o: games.player_o,
+            playerX: games.playerX,
+            playerO: games.playerO,
             created_at: games.created_at,
             updated_at: games.updated_at
         });
@@ -22,13 +22,13 @@ export const getUserGames = async (userId: string) => {
         id: games.id,
         moves: games.moves,
         winner: games.winner,
-        player_x: games.player_x,
-        player_o: games.player_o,
+        playerX: games.playerX,
+        playerO: games.playerO,
         created_at: games.created_at,
         updated_at: games.updated_at
     })
         .from(games)
-        .where(or(eq(games.player_x, userId), eq(games.player_o, userId)));
+        .where(or(eq(games.playerX, userId), eq(games.playerO, userId)));
 }
 
 export const updateGameById = async (id: number, updatedGame: Game) => {
@@ -39,8 +39,8 @@ export const updateGameById = async (id: number, updatedGame: Game) => {
             id: games.id,
             moves: games.moves,
             winner: games.winner,
-            player_x: games.player_x,
-            player_o: games.player_o,
+            playerX: games.playerX,
+            playerO: games.playerO,
             created_at: games.created_at,
             updated_at: games.updated_at
         });
@@ -53,8 +53,8 @@ export const findGameById = async (gameId: string) => {
         status: games.status,
         moves: games.moves,
         winner: games.winner,
-        player_x: games.player_x,
-        player_o: games.player_o,
+        playerX: games.playerX,
+        playerO: games.playerO,
         created_at: games.created_at,
         updated_at: games.updated_at
     })
@@ -71,12 +71,67 @@ export const makeMove = async (game: any) => {
         .where(eq(games.id, game.id))
         .returning({
             id: games.id,
+            game_id: games.game_id,
             moves: games.moves,
             status: games.status,
             winner: games.winner,
-            player_x: games.player_x,
-            player_o: games.player_o,
+            playerX: games.playerX,
+            playerO: games.playerO,
             created_at: games.created_at,
             updated_at: games.updated_at
         });
 }
+
+export const getGameWithUsers = async (gameId: string) => {
+    return await db.query.games.findMany({
+        where: eq(games.game_id, gameId),
+        with: {
+            playerX:  {
+                columns: {
+                    id: true,
+                    username: true,
+                    email: true,
+                    wins: true,
+                    losses: true,
+                    draws: true
+                }
+              },
+            playerO: {
+                columns: {
+                    id: true,
+                    username: true,
+                    email: true,
+                    wins: true,
+                    losses: true,
+                    draws: true
+                }
+            }
+        }
+    });
+}
+
+// export const getGameWithUsers = async (gameId: number) => {
+//     return await db
+//       .select({
+//         id: games.id,
+//         game_id: games.game_id,
+//         status: games.status,
+//         moves: games.moves,
+//         winner: games.winner,
+//         playerX: {
+//           id: sql<string>`player_x.id`,
+//           username: sql<string>`player_x.username`,
+//           email: sql<string>`player_x.email`,
+//         },
+//         playerO: {
+//           id: sql<string>`player_o.id`,
+//           username: sql<string>`player_o.username`,
+//           email: sql<string>`player_o.email`,
+//         },
+//         created_at: games.created_at,
+//         updated_at: games.updated_at,
+//       })
+//       .from(games)
+//       .leftJoin('player_x', eq(games.player_x, users.id))
+//       .where(eq(games.id, gameId));
+//   };

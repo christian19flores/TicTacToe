@@ -1,9 +1,8 @@
 export const isUsersTurn = async (user:any, game: any) => {
     if (game.moves.length === 0) {
-        return user.userId === game.player_x;
+        return user.userId === game.playerX;
     }
     const lastMove = game.moves[game.moves.length - 1];
-    console.log(lastMove.player !== user.userId)
     return lastMove && lastMove.player !== user.userId;
 }
 
@@ -19,8 +18,8 @@ export const isEndingMove = async (game: any) => {
     ];
     const moves = game.moves;
     const playerMoves = {
-        X: moves.filter((m: any) => m.player === game.player_x).map((m: any) => m.position),
-        O: moves.filter((m: any) => m.player === game.player_o).map((m: any) => m.position)
+        X: moves.filter((m: any) => m.player === game.playerX).map((m: any) => m.position),
+        O: moves.filter((m: any) => m.player === game.playerO).map((m: any) => m.position)
     };
     return winningCombos.some((combo: any) => {
         return combo.every((position: any) => playerMoves.X.includes(position)) ||

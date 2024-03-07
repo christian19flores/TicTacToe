@@ -38,7 +38,6 @@ export default function Navbar({ }: NavbarProps) {
     const { state } = context;
 
     let handleLogout = () => {
-        console.log('Logging out');
         // clear the token
         localStorage.removeItem('wr-ttt');
         // clear the user context
@@ -49,33 +48,31 @@ export default function Navbar({ }: NavbarProps) {
 
     let handleNewGame = async () => {
         // send api request
-        let response = await fetch('http://localhost:3000/api/v1/game/start', {
+        await fetch('http://localhost:3000/api/v1/game/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'authorization': `Bearer ${localStorage.getItem('wr-ttt')}`
             },
-        });
-        if (response.status !== 201) {
-            // handle error
-            console.error('Error starting a new game');
-            addToast('Error starting a new game', 'error')
-            return;
-        }
-        // get the game_id from the response
-        let data = await response.json();
+        })
+            .then((resp) => resp.json())
+            .then((data) => {
+                if (!data.game) {
+                    console.error('Error starting a new game');
+                    addToast('Error starting a new game', 'error')
+                    return;
+                }
 
-        console.log(data);
-        if (!data.game) {
-            console.error('Error starting a new game');
-            addToast('Error starting a new game', 'error')
-            return;
-        }
-
-        let gameId = data.game.game_id;
-        // redirect to the game page
-        // navigate(`/game/${gameId}`);
-        window.location.href = `/game/${gameId}`;
+                // redirect to the game page
+                // I am using .href so that there is a full page refresh
+                // This is to ensure that the socket connection is re-established
+                // and state is re-initialized
+                window.location.href = `/game/${data.game.game_id}`;
+            })
+            .catch((error) => {
+                console.error(error);
+                addToast('Error starting a new game', 'error')
+            });
     }
 
     return (
@@ -172,7 +169,7 @@ export default function Navbar({ }: NavbarProps) {
                                                                         active ? 'bg-gray-100' : '',
                                                                         'block px-4 py-2 text-sm text-gray-700'
                                                                     )}
-                                                                    
+
                                                                 >
                                                                     {item.name}
                                                                 </Link>

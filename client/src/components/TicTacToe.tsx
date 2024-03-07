@@ -16,8 +16,22 @@ export default function TicTacToe({
     },
     state = {
         moves: [],
-        player_x: '',
-        player_o: '',
+        playerX: {
+            id: '',
+            username: '',
+            email: '',
+            wins: 0,
+            losses: 0,
+            draws: 0
+        },
+        playerO: {
+            id: '',
+            username: '',
+            email: '',
+            wins: 0,
+            losses: 0,
+            draws: 0
+        },
         winner: '',
         status: ''
     },
@@ -35,12 +49,12 @@ export default function TicTacToe({
         });
         setGameBoard(newGameBoard);
 
-        // Check if state is complete
+        // Check if state is completed
+        // If it is, find the winning combination
         if (state.status == 'completed') {
             console.log('Game over');
             let winningCombination = findWinningCombination();
             setWinningCombination(winningCombination);
-            console.log('Winning combination:', winningCombination)
         } else {
             setWinningCombination(null);
         }
@@ -58,7 +72,7 @@ export default function TicTacToe({
             // Set the game board on FE to reflect the move
             // This is to give the user immediate feedback
             let newGameBoard = [...gameBoard];
-            let playerId = playerState.player_char == state.player_x ? state.player_x : state.player_o;
+            let playerId = playerState.player_char == 'X' ? state.playerX.id : state.playerO.id;
             newGameBoard[index] = playerId as string;
 
             setGameBoard(newGameBoard);
@@ -151,18 +165,17 @@ export default function TicTacToe({
             lineStyle.bottom = '0';
             lineStyle.left = 'calc(50% - 2px)';
             lineStyle.right = '0';
-            lineStyle.transform = 'rotate(45deg)';
         } else if (winningCombination[0] === 2 && winningCombination[1] === 4 && winningCombination[2] === 6) {
             console.log('Reverse diagonal');
             lineStyle.top = '0';
             lineStyle.bottom = '0';
             lineStyle.left = 'calc(50% - 2px)';
             lineStyle.right = '0';
-            lineStyle.transform = 'rotate(-45deg)';
         }
 
         return lineStyle;
     }
+
     const symbolVariants = {
         initial: { scale: 0 },
         animate: {
@@ -178,9 +191,9 @@ export default function TicTacToe({
         initial: { scale: 0, rotate: 0 },
         initialDiagonal: { scale: 0, rotate: -45 },
         initialReverseDiagonal: { scale: 0, rotate: 45 },
-        animate: { scale: 1, rotate: 0, transition: { duration: 0.5 } },
-        diagonal: { scale: 1, rotate: -45, transition: { duration: 0.5 } },
-        reverseDiagonal: { scale: 1, rotate: 45, transition: { duration: 0.5 } },
+        animate: { scale: 1, rotate: 0, transition: { duration: 0.3 } },
+        diagonal: { scale: 1, rotate: -45, transition: { duration: 0.3 } },
+        reverseDiagonal: { scale: 1, rotate: 45, transition: { duration: 0.3 } },
     };
 
     return (
@@ -192,8 +205,8 @@ export default function TicTacToe({
                         className="bg-base-100 h-24 w-24 flex items-center justify-center"
                         onClick={() => handleCellClick(index)}
                     >
-                        {state.player_o === '' || state.player_x === '' ? null :
-                            cell === state.player_x ? (
+                        {state.playerO.id === '' || state.playerX.id === '' ? null :
+                            cell === state.playerX.id ? (
                                 <motion.div
                                     variants={symbolVariants}
                                     initial="initial"
@@ -202,7 +215,7 @@ export default function TicTacToe({
                                 >
                                     <X size={64} />
                                 </motion.div>
-                            ) : cell === state.player_o ? (
+                            ) : cell === state.playerO.id ? (
                                 <motion.div
                                     variants={symbolVariants}
                                     initial="initial"
@@ -216,6 +229,12 @@ export default function TicTacToe({
                     </div>
                 );
             })}
+
+            {state.winner === 'draw' && (
+                <div className="absolute top-0 left-0 w-full h-full bg-base-200 flex items-center justify-center opacity-95">
+                    <h1 className="text-4xl font-bold text-base-content">It's a draw!</h1>
+                </div>
+            )}
 
             {winningCombination && (
                 <motion.div

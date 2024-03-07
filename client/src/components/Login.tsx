@@ -1,25 +1,48 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import UserContext from "../contexts/UserContext";
 
-interface LoginProps {
-
-}
-
-export default function Login({ }: LoginProps) {
+export default function Login() {
     const context = useContext(UserContext);
     let navigate = useNavigate();
 
     if (!context) throw new Error('useUser must be used within a UserProvider');
 
-    const {state, dispatch} = context;
+    const { state, dispatch } = context;
 
     let [email, setEmail] = useState('');
     let [password, setPassword] = useState('');
 
-    let handleFormSubmit = async () => {
-        console.log('Form submitted');
-        let resp = await fetch('http://localhost:3000/api/v1/auth/login', {
+    let [errors, setErrors] = useState({
+        email: '',
+        password: '',
+    });
+
+    let handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        // Perform form validation
+        let validationErrors = {
+            email: '',
+            password: '',
+        };
+
+        if (!email) {
+            validationErrors.email = 'Email is required';
+        } else if (!/\S+@\S+\.\S+/.test(email)) {
+            validationErrors.email = 'Invalid email format';
+        }
+
+        if (!password) {
+            validationErrors.password = 'Password is required';
+        }
+
+        if (validationErrors.email || validationErrors.password) {
+            setErrors(validationErrors);
+            return;
+        }
+
+        await fetch('http://localhost:3000/api/v1/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -28,32 +51,36 @@ export default function Login({ }: LoginProps) {
                 email,
                 password,
             }),
-        });
-
-        let data = await resp.json();
-
-        if (resp.status !== 200) {
-            console.log(data);
-            // handle error
-            return;
-        }
-
-        dispatch({
-            type: 'SET_USER',
-            payload: {
-                id: data.user.id,
-                username: data.user.username,
-                email: data.user.email,
-                wins: data.user.wins,
-                losses: data.user.losses,
-                draws: data.user.draws,
-            }
         })
+            .then((resp) => {
+                if (resp.status !== 200) {
+                    return resp.json().then((data) => {
+                        // handle error
+                    });
+                }
+                return resp.json();
+            })
+            .then(data => {
+                dispatch({
+                    type: 'SET_USER',
+                    payload: {
+                        id: data.user.id,
+                        username: data.user.username,
+                        email: data.user.email,
+                        wins: data.user.wins,
+                        losses: data.user.losses,
+                        draws: data.user.draws,
+                    }
+                });
 
-        localStorage.setItem('wr-ttt', data.token);
+                localStorage.setItem('wr-ttt', data.token);
 
-        // Redirect to leaderboard
-        navigate('/leaderboard');
+                // Redirect to leaderboard
+                navigate('/leaderboard');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     }
 
     return (
@@ -71,11 +98,10 @@ export default function Login({ }: LoginProps) {
                 </div>
 
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                    <div className="space-y-6">
+                    <form onSubmit={handleFormSubmit} className="space-y-6">
                         <label className="form-control w-full">
                             <div className="label">
                                 <span className="label-text">Email</span>
-                                {/* <span className="label-text-alt">Top Right label</span> */}
                             </div>
                             <input
                                 id="email"
@@ -83,19 +109,20 @@ export default function Login({ }: LoginProps) {
                                 type="email"
                                 autoComplete="email"
                                 required
-                                className="input input-bordered w-full"
+                                className={`input input-bordered w-full ${errors.email ? 'input-error' : ''}`}
                                 onChange={(e) => setEmail(e.target.value)}
                                 value={email}
                             />
-                            {/* <div className="label">
-                                <span className="label-text-alt">Bottom Left label</span>
-                            </div> */}
+                            {errors.email && (
+                                <div className="label">
+                                    <span className="label-text-alt text-error">{errors.email}</span>
+                                </div>
+                            )}
                         </label>
 
                         <label className="form-control w-full">
                             <div className="label">
                                 <span className="label-text">Password</span>
-                                {/* <span className="label-text-alt">Top Right label</span> */}
                             </div>
                             <input
                                 id="password"
@@ -103,24 +130,26 @@ export default function Login({ }: LoginProps) {
                                 type="password"
                                 autoComplete="current-password"
                                 required
-                                className="input input-bordered w-full"
+                                className={`input input-bordered w-full ${errors.password ? 'input-error' : ''}`}
                                 onChange={(e) => setPassword(e.target.value)}
                                 value={password}
                             />
-                            {/* <div className="label">
-                                <span className="label-text-alt">Bottom Left label</span>
-                            </div> */}
+                            {errors.password && (
+                                <div className="label">
+                                    <span className="label-text-alt text-error">{errors.password}</span>
+                                </div>
+                            )}
                         </label>
 
                         <div>
                             <button
-                                onClick={() => handleFormSubmit() }
+                                type="submit"
                                 className="btn btn-block btn-primary"
                             >
                                 Sign In
                             </button>
                         </div>
-                    </div>
+                    </form>
 
                     <p className="mt-10 text-center text-sm text-gray-400">
                         Not a member?{' '}
@@ -132,8 +161,4 @@ export default function Login({ }: LoginProps) {
             </div>
         </>
     );
-};
-function dispatch(arg0: { type: string; payload: { username: any; email: any; }; }) {
-    throw new Error("Function not implemented.");
 }
-

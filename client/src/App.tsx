@@ -10,6 +10,7 @@ import CreateGame from './components/CreateGame'
 import Navbar from './components/Navbar'
 import ToastProvider from './contexts/ToastContext'
 import Logout from './components/Logout'
+import ErrorPage from './components/ErrorPage'
 
 function App() {
   // get auth status
@@ -28,6 +29,8 @@ function App() {
               <Route path="/game/:gameId" element={<GameBoard />} />
               <Route path="/create" element={<CreateGame />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/404" element={<ErrorPage />} />
+              <Route path="*" element={<ErrorPage />} />
             </Routes>
           </MainContainer>
         </ToastProvider>

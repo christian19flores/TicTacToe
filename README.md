@@ -18,8 +18,10 @@ This project is a real-time Tic Tac Toe game that allows two players to compete 
 
 ### Environment Setup
 You must give the node server a `PGDATABASE` variable and a `SECRET_KEY` in a .env file in the root of the project.
+ 1. Use  A pooled postgreSQL connection url
+ 2. The secret key can be any random string with no special characters
 ```bash
-PGDATABASE=''
+PGDATABASE='postgresql://user:pass@server-database/db-name?sslmode=require'
 SECRET_KEY=''
 ```
 
@@ -43,6 +45,17 @@ cd ./client
 npm install
 ```
 
+### Database Migration/Seed
+1. **Migrate the schema to the database**
+```bash
+npm run migrate
+```
+2. **Seed the database**
+    - Sample Seed Data - (john@gmail.com, john123) (jill@gmail.com, jill123) (josh@gmail.com, josh123) etc
+```bash
+npm run seed
+```
+
 ### Running the Project
 After installation, you can follow these steps
 
@@ -52,7 +65,7 @@ npm run start
 ```
 This will start the Node.js server on port 3000
 
-2. **Start the frontend development server:
+2. **In a separate terminal start the vite frontend development server:**
 ```bash
 cd ./client
 npm run dev

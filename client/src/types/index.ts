@@ -36,8 +36,22 @@ export interface PlayerState {
 
 export interface GameState {
     moves: GameMove[];
-    player_x: string;
-    player_o: string;
+    playerX: {
+        id: string;
+        username: string;
+        email: string;
+        wins: number;
+        losses: number;
+        draws: number;
+    };
+    playerO: {
+        id: string;
+        username: string;
+        email: string;
+        wins: number;
+        losses: number;
+        draws: number;
+    };
     winner: string;
     status: string;
 }
