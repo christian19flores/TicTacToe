@@ -1,4 +1,4 @@
-# Tic Tac Toe Game with Websockets
+# Tic Tac Toe
 
 ## Overview
 
