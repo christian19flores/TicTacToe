@@ -4,11 +4,22 @@
 
 This project is a real-time Tic Tac Toe game that allows two players to compete against each other over the internet. It uses websockets for real-time communication between the client and the server. The backend is built on Node.js, leveraging the `socket.io` package for managing websocket connections. The frontend is developed with React and bundled using Vite, providing a fast and modern development experience.
 
+### Tech Stack
+ - Node.js
+ - Drizzle ORM
+ - Socket.io
+ - React frontend(Vite)
+
 ### Features
 
-- Real-time gameplay between two players.
-- Responsive design for desktop and mobile browsers.
-- Real-time connection status updates.
+- User can create a new game board
+- Allow two (and only two) players to connect to a game board
+- Persist game state on the server
+- Follow standard rules for tic-tac-toe (or noughts and crosses)
+- Display the game result and persist in the database at the end of the game
+- Display a ranking of the top five players and allow players to start a new game
+- Custom JWT for authentication
+- Note: User authentication is minimal, and lacks features that would belong in a production app.
 
 ## Getting Started
 
