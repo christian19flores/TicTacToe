@@ -31,6 +31,7 @@ This project is a real-time Tic Tac Toe game that allows two players to compete 
 You must give the node server a `PGDATABASE` variable and a `SECRET_KEY` in a .env file in the root of the project.
  1. Use  A pooled postgreSQL connection url
  2. The secret key can be any random string with no special characters
+ 3. For convenvience I used https://neon.tech/ for my database
 ```bash
 PGDATABASE='postgresql://user:pass@server-database/db-name?sslmode=require'
 SECRET_KEY=''
