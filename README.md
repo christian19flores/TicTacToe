@@ -47,7 +47,7 @@ cd TicTacToe
 
 1. **Install backend**
 ```bash
-npm install
+npm install # Must run this command from the root of the project
 ```
 
 2. **Install frontend**
@@ -58,13 +58,14 @@ npm install
 
 ### Database Migration/Seed
 1. **Migrate the schema to the database**
+    - Must be from root of project
 ```bash
-npm run migrate
+npm run migrate # Must run this command from the root of the project
 ```
 2. **Seed the database**
     - Sample Seed Data - (john@gmail.com, john123) (jill@gmail.com, jill123) (josh@gmail.com, josh123) etc
 ```bash
-npm run seed
+npm run seed # Must run this command from the root of the project
 ```
 
 ### Running the Project
@@ -72,7 +73,7 @@ After installation, you can follow these steps
 
 1. **Start the backend server**
 ```bash
-npm run start
+npm run start  # Must run this command from the root of the project
 ```
 This will start the Node.js server on port 3000
 
